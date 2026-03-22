@@ -34,6 +34,9 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+
       - name: Build APK
         run: flutter build apk --release
 
