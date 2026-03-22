@@ -1,0 +1,33 @@
+name: launcher
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  battery_plus: ^6.0.1
+  flutter_bloc: ^9.1.0
+  equatable: ^2.0.7
+  installed_apps: ^1.6.0
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Hermit
+      fonts:
+        - asset: assets/fonts/Hermit-Regular.otf
+        - asset: assets/fonts/Hermit-RegularItalic.otf
+        - asset: assets/fonts/Hermit-Bold.otf
+        - asset: assets/fonts/Hermit-BoldItalic.otf
+        - asset: assets/fonts/Hermit-Light.otf
+        - asset: assets/fonts/Hermit-LightItalic.otf
