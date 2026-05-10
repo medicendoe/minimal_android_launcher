@@ -21,6 +21,18 @@ class UpPageWidget extends StatefulWidget {
 
 class _UpPageWidgetState extends State<UpPageWidget> {
   String searchQuery = '';
+  static const double _kEdgeFrameWidth = 30.0;
+  Offset? _gestureStart;
+
+  bool _isEdgeGesture(BuildContext context) {
+    if (_gestureStart == null) return false;
+    final size = MediaQuery.of(context).size;
+    final p = _gestureStart!;
+    return p.dx < _kEdgeFrameWidth ||
+        p.dx > size.width - _kEdgeFrameWidth ||
+        p.dy < _kEdgeFrameWidth ||
+        p.dy > size.height - _kEdgeFrameWidth;
+  }
 
   void _refreshAppList() {
     context.read<AppListCubit>().refreshAppList();
@@ -36,7 +48,26 @@ class _UpPageWidgetState extends State<UpPageWidget> {
         final hasFilter = appList.isNotEmpty;
 
         return GestureDetector(
+          onVerticalDragStart: (d) => _gestureStart = d.localPosition,
+          onHorizontalDragStart: (d) => _gestureStart = d.localPosition,
+          onVerticalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
+            final dy = details.velocity.pixelsPerSecond.dy;
+            if (dy < -300) {
+              // Swipe up — shortcut.
+              final shortcut =
+                  config.getShortcut(SwipeDirection.up, windowType: WindowType.up);
+              if (shortcut != null && shortcut.packageName.isNotEmpty) {
+                InstalledApps.startApp(shortcut.packageName);
+                Navigator.pop(context);
+              }
+            } else if (dy > 300) {
+              // Swipe down — return to home screen.
+              Navigator.pop(context);
+            }
+          },
           onHorizontalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
             final dx = details.velocity.pixelsPerSecond.dx;
             if (dx > 300) {
               // Swipe right.

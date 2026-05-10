@@ -30,6 +30,18 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomePageWidgetState extends State<HomePageWidget> {
   late final Battery _battery;
+  static const double _kEdgeFrameWidth = 30.0;
+  Offset? _gestureStart;
+
+  bool _isEdgeGesture(BuildContext context) {
+    if (_gestureStart == null) return false;
+    final size = MediaQuery.of(context).size;
+    final p = _gestureStart!;
+    return p.dx < _kEdgeFrameWidth ||
+        p.dx > size.width - _kEdgeFrameWidth ||
+        p.dy < _kEdgeFrameWidth ||
+        p.dy > size.height - _kEdgeFrameWidth;
+  }
 
   @override
   void initState() {
@@ -49,7 +61,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           onLongPress: config.clockHoldPackageName != null
               ? () => InstalledApps.startApp(config.clockHoldPackageName!)
               : null,
+          onVerticalDragStart: (d) => _gestureStart = d.localPosition,
+          onHorizontalDragStart: (d) => _gestureStart = d.localPosition,
           onVerticalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
             final dy = details.velocity.pixelsPerSecond.dy;
             if (dy > 300) {
               Navigator.pushNamed(context, RouteConstants.down);
@@ -58,6 +73,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             }
           },
           onHorizontalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
             final dx = details.velocity.pixelsPerSecond.dx;
             if (dx > 300) {
               Navigator.pushNamed(context, RouteConstants.right);

@@ -22,6 +22,18 @@ class LeftPageWidget extends StatefulWidget {
 
 class _LeftPageWidgetState extends State<LeftPageWidget> {
   String searchQuery = '';
+  static const double _kEdgeFrameWidth = 30.0;
+  Offset? _gestureStart;
+
+  bool _isEdgeGesture(BuildContext context) {
+    if (_gestureStart == null) return false;
+    final size = MediaQuery.of(context).size;
+    final p = _gestureStart!;
+    return p.dx < _kEdgeFrameWidth ||
+        p.dx > size.width - _kEdgeFrameWidth ||
+        p.dy < _kEdgeFrameWidth ||
+        p.dy > size.height - _kEdgeFrameWidth;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +45,10 @@ class _LeftPageWidgetState extends State<LeftPageWidget> {
         final hasFilter = appList.isNotEmpty;
 
         return GestureDetector(
+          onVerticalDragStart: (d) => _gestureStart = d.localPosition,
+          onHorizontalDragStart: (d) => _gestureStart = d.localPosition,
           onHorizontalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
             final dx = details.velocity.pixelsPerSecond.dx;
             if (dx > 300) {
               // Swipe right — return to home screen.
@@ -50,6 +65,7 @@ class _LeftPageWidgetState extends State<LeftPageWidget> {
             }
           },
           onVerticalDragEnd: (details) {
+            if (_isEdgeGesture(context)) return;
             final dy = details.velocity.pixelsPerSecond.dy;
             if (dy > 300) {
               // Swipe down — shortcut.
